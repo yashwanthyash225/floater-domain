@@ -1,7 +1,9 @@
-# Floater-Domain
+# [Floater-Domain] (https://itpa.somas.stonybrook.edu/ESA/floater_domain/)
 
 ## Introduction
-The project Floater-Domain is built for users to select a custom rectangular domain on the map. Submitting the selected region after the selecion will trigger a process to run ESA(Ensemble Sensitivity Analysis) for the selected paramters. After some time, the analysis will generate the images which can be found [here](https://www.wpc.ncep.noaa.gov/wpc_ensemble_clusters/esa/view_esa.php?cycle=2025051900&day=day_1&domain=domain1&ens=all_ensembles&field=standard_sens_of_24hr_avged_mslp_pc2&rfunc=qpf_pc1&sensvar=500hgt)
+The project Floater-Domain is built for users to select a custom rectangular domain on the map. Submitting the selected region after the selecion will trigger a process to run ESA(Ensemble Sensitivity Analysis) for the selected paramters. Please follow the [LINK](https://itpa.somas.stonybrook.edu/ESA/floater_domain/) to enter into the website.
+<br>
+After some time, the analysis will generate the images which can be found [here](https://www.wpc.ncep.noaa.gov/wpc_ensemble_clusters/esa/view_esa.php?cycle=2025051900&day=day_1&domain=domain1&ens=all_ensembles&field=standard_sens_of_24hr_avged_mslp_pc2&rfunc=qpf_pc1&sensvar=500hgt)
 
 ## Code Structure
 This is a simple static website built using HTML, CSS, PHP.
