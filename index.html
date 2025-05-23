@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESA Floater Domain</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <script type="text/javascript">
+        function main_map_init() {
+            var map = L.map('map').setView([33.5, -102.0], 4);
+
+            L.tileLayer("https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png?api_key=18017d77-4c78-417d-9195-f6ac92eabfee", {
+                attribution: '&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+                minZoom: 3,
+                maxZoom: 18
+            }).addTo(map);
+
+            var drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+
+            var drawControl = new L.Control.Draw({
+                draw: {
+                    polygon: false,
+                    marker: false,
+                    polyline: false,
+                    circle: false
+                },
+                edit: {
+                    featureGroup: drawnItems,
+                    editable: true
+                }
+            });
+            map.addControl(drawControl);
+
+            map.on('draw:created', function (e) {
+                var layer = e.layer;
+                layer.setStyle({color: "#4B1BDE"});
+                drawnItems.addLayer(layer);
+                updateRbox(layer);
+            });
+
+			map.on('draw:edited', function (e) {
+				// Get the layers that were edited
+				var layers = e.layers;
+		
+				layers.eachLayer(function (layer) {
+					if (layer instanceof L.Rectangle) {
+						// Get the updated bounds of the rectangle
+						updateRbox(layer);
+					}
+				});
+			});
+
+            function updateRbox(layer) {
+                var latlons = layer.getBounds().toBBoxString().split(',');
+                var llo = parseFloat(latlons[0]),
+                    lla = parseFloat(latlons[1]),
+                    ulo = parseFloat(latlons[2]),
+                    ula = parseFloat(latlons[3]);
+
+                if (llo < 0) { llo += 360; }
+                if (ulo < 0) { ulo += 360; }
+
+                document.getElementById("llon").value = llo.toFixed(3);
+                document.getElementById("llat").value = lla.toFixed(3);
+                document.getElementById("ulon").value = ulo.toFixed(3);
+                document.getElementById("ulat").value = ula.toFixed(3);
+            }
+        }
+        window.onload = main_map_init;
+    </script>
+</head>
+<body>
+    <div class='overlay'>
+        <h1>Ensemble Sensitivity Analysis (ESA) Floater Domain</h1>
+        <form action="results.php" method="POST">
+			<div class="form-div">
+				<label>Lower Latitude: <input type="text" id="llat" name="llat" required></label><br>
+				<label>Upper Latitude: <input type="text" id="ulat" name="ulat" required></label><br>
+				<label>Lower Longitude: <input type="text" id="llon" name="llon" required></label><br>
+				<label>Upper Longitude: <input type="text" id="ulon" name="ulon" required></label><br>
+				<label for="forecast-day">Forecast Day: <select name="forecast-day" id="forecast-day" required></select></label><br>
+				<label for="dropdown">Initial date: <select id="forcast-date" name="dates"></select> </label><br>
+				<script>
+					const day_dropdown = document.getElementById('forecast-day');
+					for (let i = 1; i <= 9; i++) {
+						const option = document.createElement('option');
+						option.value = i;   
+						option.textContent = "Day " + i;  
+						day_dropdown.appendChild(option);
+					}
+
+
+					const date_dropdown = document.getElementById('forcast-date');
+					function formatDate(date) {
+						let day = String(date.getDate()).padStart(2, '0');
+						let month = String(date.getMonth() + 1).padStart(2, '0'); 
+						let year = date.getFullYear();
+						return `${year}-${month}-${day}`;
+					}
+					let today = new Date();
+					for (let i = 0; i < 10; i++) {
+						const option = document.createElement('option');
+						let pastDate = new Date();
+						pastDate.setDate(today.getDate() - i); 
+						option.value = formatDate(pastDate);   
+						option.textContent = formatDate(pastDate);  
+						date_dropdown.appendChild(option);
+					}
+				</script>
+			</div>
+		
+			<div id="map" style="width:800px; height:800px; margin:0 auto;"></div>
+            <br>
+            <input type="submit" value="Submit Domain">
+        </form> 
+    </div>
+</body>
+</html>
